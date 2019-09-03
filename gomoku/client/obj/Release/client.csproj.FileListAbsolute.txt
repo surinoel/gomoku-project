@@ -1,0 +1,12 @@
+C:\Users\yeong\source\repos\gomoku\client\bin\Release\client.exe.config
+C:\Users\yeong\source\repos\gomoku\client\bin\Release\client.exe
+C:\Users\yeong\source\repos\gomoku\client\bin\Release\client.pdb
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.csprojAssemblyReference.cache
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.MenuForm.resources
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.MultiPlay.resources
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.Properties.Resources.resources
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.SinglePlay.resources
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.csproj.GenerateResource.cache
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.csproj.CoreCompileInputs.cache
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.exe
+C:\Users\yeong\source\repos\gomoku\client\obj\Release\client.pdb

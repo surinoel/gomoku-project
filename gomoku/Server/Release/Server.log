@@ -1,0 +1,11 @@
+﻿  main.cpp
+c:\users\yeong\source\repos\gomoku\server\main.cpp(55): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(66): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(83): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(94): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(115): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(166): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  코드를 생성하고 있습니다.
+  All 329 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  코드를 생성했습니다.
+  Server.vcxproj -> C:\Users\yeong\source\repos\gomoku\Release\Server.exe
