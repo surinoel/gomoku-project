@@ -21,3 +21,14 @@ E:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.GenerateResource.cac
 E:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.CoreCompileInputs.cache
 E:\git\gomoku-project\gomoku\client\obj\Debug\client.exe
 E:\git\gomoku-project\gomoku\client\obj\Debug\client.pdb
+F:\git\gomoku-project\gomoku\client\bin\Debug\client.exe.config
+F:\git\gomoku-project\gomoku\client\bin\Debug\client.exe
+F:\git\gomoku-project\gomoku\client\bin\Debug\client.pdb
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.MenuForm.resources
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.MultiPlay.resources
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.Properties.Resources.resources
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.SinglePlay.resources
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.GenerateResource.cache
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.CoreCompileInputs.cache
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.exe
+F:\git\gomoku-project\gomoku\client\obj\Debug\client.pdb

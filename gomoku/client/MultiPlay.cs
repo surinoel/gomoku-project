@@ -58,7 +58,8 @@ namespace client
             gBoard = new Horse[edge, edge];
             blackTimer_label.Text = "30";
             whiteTimer_label.Text = "30";
-            
+
+            blackTimer_left = 30;
             whiteTimer_left = 30;
         }
 
@@ -132,8 +133,8 @@ namespace client
         private void Enter_Button_Click(object sender, EventArgs e)
         {
             tcpClient = new TcpClient();
-            string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
-            tcpClient.Connect(Ipv4, 18178);
+            // string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
+            tcpClient.Connect("127.0.0.1", 8000);
             stream = tcpClient.GetStream();
 
             // client에 대한 스레드 생성, 함수는 read
@@ -157,7 +158,7 @@ namespace client
                 string msg = "[Play]";
                 byte[] buf = Encoding.ASCII.GetBytes(msg + this.Room.Text);
                 stream.Write(buf, 0, buf.Length);
-                this.Status.Text = "상대 플레이어의 준비를 기다립니다.";
+                this.Status.Text += "상대 플레이어의 준비를 기다립니다.\r\n";
                 this.GameStart.Enabled = false;
             }
         }
@@ -172,7 +173,7 @@ namespace client
                 // 접속이 성공한 경우
                 if (msg.Contains("[Enter]"))
                 {
-                    this.Status.Text = "[" + this.Room.Text + "]번 방에 접속했습니다.\r\n";
+                    this.Status.Text += "[" + this.Room.Text + "]번 방에 접속했습니다.\r\n";
                     /* 게임 시작 처리 */
                     this.Room.Enabled = false;
                     this.Enter_Button.Enabled = false;
@@ -181,7 +182,7 @@ namespace client
                 // 방이 가득 찬 경우
                 if (msg.Contains("[Full]"))
                 {
-                    this.Status.Text = "이미 가득 찬 방입니다.\r\n";
+                    this.Status.Text += "이미 가득 찬 방입니다.\r\n";
                     closeNetwork();
                 }
                 // 게임이 시작된 경우
@@ -191,26 +192,25 @@ namespace client
                     string horse = msg.Split(']')[1];
                     if (horse.Contains("Black"))
                     {
-                        this.Status.Text = "당신의 차례입니다.\r\n";
+                        this.Status.Text += "당신의 차례입니다.\r\n";
                         nowTurn = true;
                         nowPlayer = Horse.BLACK;
                     }
                     else
                     {
-                        this.Status.Text = "상대방의 차례입니다.\r\n";
+                        this.Status.Text += "상대방의 차례입니다.\r\n";
                         nowTurn = false;
                         nowPlayer = Horse.WHITE;
                     }
                     nowPlaying = true;
 
-                    blackTimer_left = 30;
-                    blackTimer_label.Text = "30";
+                    blackTimer.Interval = 1000;
                     blackTimer.Start();
                 }
                 // 상대방이 나간 경우
                 if (msg.Contains("[Exit]"))
                 {
-                    this.Status.Text = "상대방이 나갔습니다.";
+                    this.Status.Text += "상대방이 나갔습니다.\r\n";
                     refresh();
                 }
                 if (msg.Contains("[Put]"))
@@ -333,7 +333,7 @@ namespace client
                     GameStart.Text = "재시작";
                 }
 #endif
-                Status.Text = "상대방 플레이어 차례입니다";
+                Status.Text += "상대방 플레이어 차례입니다.\r\n";
                 nowTurn = false;
             }
 
@@ -386,7 +386,7 @@ namespace client
                 {
                     tcpClient.Close();
                 }
-         }
+            }
 
         private void send_Click(object sender, EventArgs e)
         {

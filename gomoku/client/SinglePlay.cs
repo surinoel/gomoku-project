@@ -121,8 +121,7 @@ namespace client
                 {
                     for (int j = 0; j < edge; j++) 
                     {
-                        gBoard[i, j].check= false;
-                        gBoard[i, j].weight = 1.0;
+                        gBoard[i, j].check = false;
                     }
                 }
 
@@ -147,6 +146,8 @@ namespace client
                                 i - dxdy[k, 0] < edge && j - dxdy[k, 1] < edge)
                             {
                                 if (gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].state == Horse.none &&
+                                    tx + dxdy[k, 0] >= 0 && tx + dxdy[k, 0] < edge &&
+                                    ty + dxdy[k, 1] >= 0 && ty + dxdy[k, 1] < edge &&
                                     gBoard[tx + dxdy[k, 0], ty + dxdy[k, 1]].state == Horse.none)
                                 {
                                     gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(2.0, cnt * cnt);
@@ -273,6 +274,14 @@ namespace client
 
             nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);
 
+            for (int i = 0; i < 15; i++)
+            {
+                for (int j = 0; j < 15; j++)
+                {
+                    gBoard[i, j].weight = 1.0;
+                }
+            }
+
             judge_AI();
             double mWeight = -1;
             for (int i = 0; i < edge; i++)
@@ -292,6 +301,14 @@ namespace client
             // 흰색을 만들기 위한 SolidBrush 객체를 생성
             sb = new SolidBrush(Color.White);
             g.FillEllipse(sb, y * size, x * size, size, size);
+
+            if (isWin())
+            {
+                String msg = nowPlayer.ToString() + "플레이어가 승리했습니다";
+                MessageBox.Show(msg);
+                nowPlaying = false;
+                GameStart.Text = "게임시작";
+            }
 
             // ChatLog.Text = nowPlayer.ToString() + "플레이어 차례입니다";
             nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);

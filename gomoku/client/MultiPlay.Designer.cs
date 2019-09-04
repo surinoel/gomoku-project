@@ -153,7 +153,6 @@
             // 
             // blackTimer
             // 
-            this.blackTimer.Enabled = true;
             this.blackTimer.Interval = 1000;
             this.blackTimer.Tick += new System.EventHandler(this.blackTimer_Tick);
             // 
@@ -180,6 +179,7 @@
             this.Controls.Add(this.gomoku_area);
             this.Name = "MultiPlay";
             this.Text = "MultiPlay";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MultiPlay_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.gomoku_area)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

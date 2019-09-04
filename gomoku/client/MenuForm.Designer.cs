@@ -39,7 +39,7 @@
             this.Single_Button.Name = "Single_Button";
             this.Single_Button.Size = new System.Drawing.Size(100, 40);
             this.Single_Button.TabIndex = 0;
-            this.Single_Button.Text = "SINGLE";
+            this.Single_Button.Text = "AI";
             this.Single_Button.UseVisualStyleBackColor = true;
             this.Single_Button.Click += new System.EventHandler(this.Single_Button_Click);
             // 

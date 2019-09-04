@@ -149,23 +149,29 @@ void putClient(int roomID, int x, int y) {
 	}
 }
 
-void chatClient(int roomID, string msg) {
+void chatClient(int socknum, int roomID, string msg) {
 	char *sent = new char[256];
 	bool ok = false;
+	string data;
+	for (int i = 0; i < connections.size(); i++) {
+		if (connections[i].getRoomID() == roomID) {
+			if (!ok && connections[i].getClientSocket() == socknum) {
+				data = "[Chat](Black): " + msg;
+				ok = true;
+				break;
+			}
+			else {
+				data = "[Chat](White): " + msg;
+				break;
+			}
+		}
+	}
+
 	for (int i = 0; i < connections.size(); i++) {
 		if (connections[i].getRoomID() == roomID) {
 			ZeroMemory(sent, 256);
-			if (!ok) {
-				string data = "[Chat](Black): " + msg;
-				sprintf(sent, "%s", data.c_str());
-				ok = true;
-			}
-			else {
-				string data = "[Chat](White): " + msg;
-				sprintf(sent, "%s", data.c_str());
-			}
+			sprintf(sent, "%s", data.c_str());
 			send(connections[i].getClientSocket(), sent, 256, 0);
-
 		}
 	}
 }
@@ -310,9 +316,10 @@ void ServerThread(Client *client) {
 				playClient(roomInt);
 			}
 			else if (receivedString.find("[Chat]") != -1) {
+				int sockid = client->getClientSocket();
 				int roomInt = client->getRoomID();
 				string msg = tokens[1];
-				chatClient(roomInt, msg);
+				chatClient(sockid, roomInt, msg);
 			}
 		}
 		else {
