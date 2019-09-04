@@ -8,17 +8,41 @@
 
 using namespace std;
 
+// 판정을 위한 보드에 대한 정보
+struct board {
+	int gBoard[15][15];
+	board() {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				gBoard[i][j] = 0;
+			}
+		}
+	}
+};
+
+const int size = 33;
+const int edge = 15;
+enum Horse { none = 0, BLACK, WHITE };
+
 class Client {
 private:
 	int clientID;
 	int roomID;
 	SOCKET clientSocket;
-	
+	Horse cHorse;
+
 public:
 	Client(int clientID, SOCKET clientSocket) {
 		this->clientID = clientID;
 		this->roomID = -1;
 		this->clientSocket = clientSocket;
+		cHorse = none;
+	}
+	void setHorse(Horse h) {
+		cHorse = h;
+	}
+	int getHorse() {
+		return cHorse;
 	}
 	int getClientID() {
 		return clientID;
@@ -35,7 +59,7 @@ public:
 };
 
 vector<Client> connections;
-
+map<int, board> roominfo; // 방에 대한 정보를 방번호로 구분짓는다
 WSAData wsaData;
 SOCKET serv_sock;
 SOCKADDR_IN serv_addr;
@@ -69,10 +93,12 @@ void playClient(int roomID) {
 		if (connections[i].getRoomID() == roomID) {
 			ZeroMemory(sent, 256);
 			if (black) {
+				// cout << "말 할당 1\n";
 				sprintf(sent, "%s", "[Play]Black");
 				black = false;
 			}
 			else {
+				// cout << "말 할당 2\n";
 				sprintf(sent, "%s", "[Play]White");
 			}
 			send(connections[i].getClientSocket(), sent, 256, 0);
@@ -91,6 +117,26 @@ void exitClient(int roomID) {
 	}
 }
 
+void putWinClient(int roomID, int sockid) {
+	char *sent = new char[256];
+	for (int i = 0; i < connections.size(); i++) {
+		if (connections[i].getRoomID() == roomID) {
+			ZeroMemory(sent, 256);
+			if (connections[i].getClientSocket() == sockid) {
+				string data = "[Win]";
+				sprintf(sent, "%s", data.c_str());
+				send(connections[i].getClientSocket(), sent, 256, 0);
+			}
+			else {
+				string data = "[Lose]";
+				sprintf(sent, "%s", data.c_str());
+				send(connections[i].getClientSocket(), sent, 256, 0);
+
+			}
+		}
+	}
+}
+
 void putClient(int roomID, int x, int y) {
 	char *sent = new char[256];
 	for (int i = 0; i < connections.size(); i++) {
@@ -101,6 +147,59 @@ void putClient(int roomID, int x, int y) {
 			send(connections[i].getClientSocket(), sent, 256, 0);
 		}
 	}
+}
+
+bool isWin(int roomID, int nowHorse)
+{
+	// | 오목
+	for (int i = 0; i < edge - 4; i++)
+	{
+		for (int j = 0; j < edge; j++)
+		{
+			if (roominfo[roomID].gBoard[i][j] == nowHorse && roominfo[roomID].gBoard[i + 1][j] == nowHorse && roominfo[roomID].gBoard[i + 2][j] == nowHorse
+				&& roominfo[roomID].gBoard[i + 3][j] == nowHorse && roominfo[roomID].gBoard[i + 4][j] == nowHorse)
+			{
+				return true;
+			}
+		}
+	}
+	// ㅡ 오목
+	for (int j = 0; j < edge - 4; j++)
+	{
+		for (int i = 0; i < edge; i++)
+		{
+			if (roominfo[roomID].gBoard[i][j] == nowHorse && roominfo[roomID].gBoard[i][j + 1] == nowHorse && roominfo[roomID].gBoard[i][j + 2] == nowHorse
+				&& roominfo[roomID].gBoard[i][j + 3] == nowHorse && roominfo[roomID].gBoard[i][j + 4] == nowHorse)
+			{
+				return true;
+			}
+		}
+	}
+	// \ 오목
+	for (int i = 0; i < edge - 4; i++)
+	{
+		for (int j = 0; j < edge - 4; j++)
+		{
+			if (roominfo[roomID].gBoard[i][j] == nowHorse && roominfo[roomID].gBoard[i + 1][j + 1] == nowHorse && roominfo[roomID].gBoard[i + 2][j + 2] == nowHorse
+				&& roominfo[roomID].gBoard[i + 3][j + 3] == nowHorse && roominfo[roomID].gBoard[i + 4][j + 4] == nowHorse)
+			{
+				return true;
+			}
+		}
+	}
+	// / 오목
+	for (int i = 0; i < edge - 4; i++)
+	{
+		for (int j = 0; j < edge - 4; j++)
+		{
+			if (roominfo[roomID].gBoard[edge - i - 1][j] == nowHorse && roominfo[roomID].gBoard[edge -i - 2][j + 1] == nowHorse && roominfo[roomID].gBoard[edge - i - 3][j + 2] == nowHorse
+				&& roominfo[roomID].gBoard[edge - i - 4][j + 3] == nowHorse && roominfo[roomID].gBoard[edge - i - 5][j + 4] == nowHorse)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void ServerThread(Client *client) {
@@ -127,19 +226,32 @@ void ServerThread(Client *client) {
 							break;
 						}
 						cout << "클라이언트 [" << client->getClientID() << "]: " << roomID << "번 방으로 접속" << endl;
+		
 						/* 해당 사용자의 방 접속 정보 갱신 */
 						Client *newClient = new Client(*client);
 						newClient->setRoomID(roomInt);
+						connections[i] = *newClient;
+
+						/* 상대방이 이미 방에 들어가 있는 경우 게임 시작 */
+						if (clientCount == 1) {
+							playClient(roomInt);
+							board tmp;
+							if (!roominfo.count(roomInt)) {
+								roominfo[roomInt] = tmp;
+							}
+							newClient->setHorse(WHITE);
+						}
+						/* 혼자 입장한 경우, 검은 말 부여 */
+						else {
+							newClient->setHorse(BLACK);
+						}
+						
+						client = newClient;
 						connections[i] = *newClient;
 						/* 방에 성공적으로 접속했다고 메시지 전송 */
 						ZeroMemory(sent, 256);
 						sprintf(sent, "%s", "[Enter]");
 						send(connections[i].getClientSocket(), sent, 256, 0);
-						/* 상대방이 이미 방에 들어가 있는 경우 게임 시작 */
-						if (clientCount == 1) {
-							playClient(roomInt);
-
-						}
 					}
 				}
 			}
@@ -151,12 +263,29 @@ void ServerThread(Client *client) {
 				int x = atoi(dataTokens[1].c_str());
 				int y = atoi(dataTokens[2].c_str());
 				/* 사용자가 놓은 돌의 위치를 전송 */
+				roominfo[client->getRoomID()].gBoard[y][x] = client->getHorse();
 				putClient(roomID, x, y);
+				
+				if (isWin(client->getRoomID(), client->getHorse())) {
+					putWinClient(roomID, client->getClientSocket());
+					for (int i = 0; i < 15; i++) {
+						for (int j = 0; j < 15; j++) {
+							roominfo[client->getRoomID()].gBoard[i][j] = none;
+						}
+					}
+				}
+
 			}
 			else if (receivedString.find("[Play]") != -1) {
 				/* 메시지를 보낸 클라이언트를 찾기 */
+				cout << "재시작 메세지가 옴\n";
 				string roomID = tokens[1];
 				int roomInt = atoi(roomID.c_str());
+				for (int i = 0; i < 15; i++) {
+					for (int j = 0; j < 15; j++) {
+						roominfo[roomInt].gBoard[i][j] = none;
+					}
+				}
 				/* 사용자가 놓은 돌의 위치를 전송 */
 				playClient(roomInt);
 			}

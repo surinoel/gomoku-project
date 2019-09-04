@@ -68,7 +68,7 @@ namespace client
             }
             GameStart.Enabled = false;
         }
-
+#if false
         private bool isWin(Horse nowPlayer)
         {
             // | 오목
@@ -121,12 +121,12 @@ namespace client
             }
             return false;
         }
-
+#endif
         private void Enter_Button_Click(object sender, EventArgs e)
         {
             tcpClient = new TcpClient();
             string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
-            tcpClient.Connect(Ipv4, 18664);
+            tcpClient.Connect(Ipv4, 10682);
             stream = tcpClient.GetStream();
 
             // client에 대한 스레드 생성, 함수는 read
@@ -146,7 +146,7 @@ namespace client
             {
                 refresh();
                 nowPlaying = true;
-                GameStart.Text = "RESTART";
+                GameStart.Text = "재시작";
                 string msg = "[Play]";
                 byte[] buf = Encoding.ASCII.GetBytes(msg + this.Room.Text);
                 stream.Write(buf, 0, buf.Length);
@@ -202,7 +202,6 @@ namespace client
                     this.Status.Text = "상대방이 나갔습니다.";
                     refresh();
                 }
-               
                 if (msg.Contains("[Put]"))
                 {
                     string position = msg.Split(']')[1];
@@ -230,6 +229,7 @@ namespace client
                         SolidBrush brush = new SolidBrush(Color.White);
                         g.FillEllipse(brush, x * size, y * size, size, size);
                     }
+#if false
                     if (isWin(enemyPlayer))
                     {
                         Status.Text = "패배했습니다.";
@@ -237,125 +237,134 @@ namespace client
                         GameStart.Text = "재시작";
                         GameStart.Enabled = true;
                     }
-                    else
-                    {
-                        Status.Text = "당신이 둘 차례입니다.";
-                    }
+#endif
+                    Status.Text = "당신이 둘 차례입니다.";
                     nowTurn = true;
+                }
+                if (msg.Contains("[Win]"))
+                {
+                    Status.Text = "승리했습니다.";
+                    nowPlaying = false;
+                    GameStart.Text = "재시작";
+                    GameStart.Enabled = true;
+                }
+                if (msg.Contains("[Lose]"))
+                {
+                    Status.Text = "패배했습니다.";
+                    nowPlaying = false;
+                    GameStart.Text = "재시작";
+                    GameStart.Enabled = true;
                 }
             }
         }
+            // 바둑판이 눌러졌을 때
+            private void gomoku_area_MouseDown(object sender, MouseEventArgs e)
+            {
+                if (!nowPlaying) // 혼자 입장해있을 때
+                {
+                    MessageBox.Show("게임을 실행한 후 눌러주세요");
+                    return;
+                }
+                if (!nowTurn) // 내 턴이 아니라면
+                {
+                    return;
+                }
+                // 오목판에 그림을 그리기 위해 Graphics 객체를 만들어줬다
+                Graphics g = this.gomoku_area.CreateGraphics();
+                int x = e.X / size;
+                int y = e.Y / size;
+                // 테두리를 벗어났을 때
+                if (x < 0 || y < 0 || x >= edge || y >= edge)
+                {
+                    MessageBox.Show("테두리를 벗어났습니다");
+                    return;
+                }
+                // 클릭한 좌표 출력
+                // MessageBox.Show(x + ", " + y);
+                // 검은색 말이라면
+                if (gBoard[x, y] != Horse.none) return;
 
-        // 바둑판이 눌러졌을 때
-        private void gomoku_area_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (!nowPlaying) // 혼자 입장해있을 때
-            {
-                MessageBox.Show("게임을 실행한 후 눌러주세요");
-                return;
-            }
-            if (!nowTurn) // 내 턴이 아니라면
-            {
-                return;
-            }
-            // 오목판에 그림을 그리기 위해 Graphics 객체를 만들어줬다
-            Graphics g = this.gomoku_area.CreateGraphics();
-            int x = e.X / size;
-            int y = e.Y / size;
-            // 테두리를 벗어났을 때
-            if (x < 0 || y < 0 || x >= edge || y >= edge)
-            {
-                MessageBox.Show("테두리를 벗어났습니다");
-                return;
-            }
-            // 클릭한 좌표 출력
-            // MessageBox.Show(x + ", " + y);
-            // 검은색 말이라면
-            if (gBoard[x, y] != Horse.none) return;
+                gBoard[x, y] = nowPlayer;
 
-            gBoard[x, y] = nowPlayer;
+                string message = "[Put]" + Room.Text + "," + x + "," + y;
+                byte[] buf = Encoding.ASCII.GetBytes(message);
+                stream.Write(buf, 0, buf.Length);
 
-            string message = "[Put]" + Room.Text + "," + x + "," + y;
-            byte[] buf = Encoding.ASCII.GetBytes(message);
-            stream.Write(buf, 0, buf.Length);
-
-            if (nowPlayer == Horse.BLACK)
-            {
-                // 검은색을 만들기 위해 SolidBrush 객체를 생성
-                SolidBrush sb = new SolidBrush(Color.Black);
-                g.FillEllipse(sb, x * size, y * size, size, size);
-            }
-            else
-            {
-                // 흰색을 만들기 위한 SolidBrush 객체를 생성
-                SolidBrush sb = new SolidBrush(Color.White);
-                g.FillEllipse(sb, x * size, y * size, size, size);
-            }
-            if (isWin(nowPlayer))
-            {
-                String msg = nowPlayer.ToString() + "플레이어가 승리했습니다";
-                MessageBox.Show(msg);
-                nowPlaying = false;
-                GameStart.Text = "재시작";
-            }
-            else
-            {
+                if (nowPlayer == Horse.BLACK)
+                {
+                    // 검은색을 만들기 위해 SolidBrush 객체를 생성
+                    SolidBrush sb = new SolidBrush(Color.Black);
+                    g.FillEllipse(sb, x * size, y * size, size, size);
+                }
+                else
+                {
+                    // 흰색을 만들기 위한 SolidBrush 객체를 생성
+                    SolidBrush sb = new SolidBrush(Color.White);
+                    g.FillEllipse(sb, x * size, y * size, size, size);
+                }
+#if false
+                if (isWin(nowPlayer))
+                {
+                    String msg = nowPlayer.ToString() + "플레이어가 승리했습니다";
+                    MessageBox.Show(msg);
+                    nowPlaying = false;
+                    GameStart.Text = "재시작";
+                }
+#endif
                 Status.Text = "상대방 플레이어 차례입니다";
+                nowTurn = false;
             }
 
-            nowTurn = false;
-        }
-
-        // 화면 구성 함수
-        private void gomoku_area_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics gp = e.Graphics;
-            // 굵기가 3인 펜 객체 생성
-            Pen p = new Pen(Color.Black, 2);
-            // Point(x, y), 내 개념에서는 x, y가 바뀜
-            gp.DrawLine(p, size / 2, size / 2, size / 2, size * edge - size / 2);
-            gp.DrawLine(p, size / 2, size / 2, size * edge - size / 2, size / 2);
-            gp.DrawLine(p, size / 2, size * edge - size / 2, size * edge - size / 2, size * edge - size / 2);
-            gp.DrawLine(p, size * edge - size / 2, size / 2, size * edge - size / 2, size * edge - size / 2);
-
-            p = new Pen(Color.Black, 1);
-            // 대각선으로 이동하면서 상하 라인을 그려줌
-            for (int i = size + size / 2; i < size * edge - size / 2; i += size)
+            // 화면 구성 함수
+            private void gomoku_area_Paint(object sender, PaintEventArgs e)
             {
-                gp.DrawLine(p, size / 2, i, size * edge - size / 2, i);
-                gp.DrawLine(p, i, size / 2, i, size * edge - size / 2);
-            }
-        }
+                Graphics gp = e.Graphics;
+                // 굵기가 3인 펜 객체 생성
+                Pen p = new Pen(Color.Black, 2);
+                // Point(x, y), 내 개념에서는 x, y가 바뀜
+                gp.DrawLine(p, size / 2, size / 2, size / 2, size * edge - size / 2);
+                gp.DrawLine(p, size / 2, size / 2, size * edge - size / 2, size / 2);
+                gp.DrawLine(p, size / 2, size * edge - size / 2, size * edge - size / 2, size * edge - size / 2);
+                gp.DrawLine(p, size * edge - size / 2, size / 2, size * edge - size / 2, size * edge - size / 2);
 
-        // C#에서 domain -> DNS로 바꿔주는 함수
-        public static string getDNStoIP(string host)
-        {
-            IPHostEntry hostInfo;
-            try
+                p = new Pen(Color.Black, 1);
+                // 대각선으로 이동하면서 상하 라인을 그려줌
+                for (int i = size + size / 2; i < size * edge - size / 2; i += size)
+                {
+                    gp.DrawLine(p, size / 2, i, size * edge - size / 2, i);
+                    gp.DrawLine(p, i, size / 2, i, size * edge - size / 2);
+                }
+            }
+
+            // C#에서 domain -> DNS로 바꿔주는 함수
+            public static string getDNStoIP(string host)
             {
-                hostInfo = Dns.Resolve(host);
+                IPHostEntry hostInfo;
+                try
+                {
+                    hostInfo = Dns.Resolve(host);
+                }
+                catch (Exception e)
+                {
+                    return "Unable to resolve host\n";
+                }
+                return hostInfo.AddressList[0].ToString();
             }
-            catch (Exception e)
+
+            // MultiPlay 창이 닫혀졌을 때
+            private void MultiPlay_FormClosed(object sender, FormClosedEventArgs e)
             {
-                return "Unable to resolve host\n";
+                closeNetwork();
             }
-            return hostInfo.AddressList[0].ToString();
-        }
 
-        // MultiPlay 창이 닫혀졌을 때
-        private void MultiPlay_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            closeNetwork();
-        }
-
-        void closeNetwork()
-        {
-            if (threading && thread.IsAlive) thread.Abort();
-            if (entered)
+            void closeNetwork()
             {
-                tcpClient.Close();
-            }
-        }
-
+                if (threading && thread.IsAlive) thread.Abort();
+                if (entered)
+                {
+                    tcpClient.Close();
+                }
+         }
     }
+    
 }

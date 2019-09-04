@@ -20,12 +20,39 @@ namespace client
     
         // enum으로 BLACK = 1, WHITE = 2로 구분
         private enum Horse { none = 0, BLACK, WHITE };
+
+        struct Board
+        {
+            public Horse state;
+            public double weight;
+            public bool check;
+
+            public Board(Horse state, double weight, bool check)
+            {
+                this.state = state;
+                this.weight = weight;
+                this.check = check;
+            }
+        }
+
         // gBoard에 대한 2차원 배열 선언
-        private Horse[,] gBoard = new Horse[edge, edge];
+        private Board[,] gBoard = new Board[edge, edge];
         // 현재 플레이어 선언
         private Horse nowPlayer = Horse.BLACK;
         // 게임 시작 버튼을 넣음으로써 생기는 변수
         private bool nowPlaying = false;
+
+        // AI 처리를 위한 방향변수
+        private int[,] dxdy = new int[8, 2] { 
+                                    { -1, 1 }, 
+                                    { 0, 1 },
+                                    { 1, 1 },
+                                    { 1, 0 },
+                                    { 1, -1 },
+                                    { 0, -1 },
+                                    { -1, -1 },
+                                    { -1, 0 }
+        };
 
         // 클래스 처음에 만들어졌을 때 기본 구성
         public SinglePlay()
@@ -40,8 +67,8 @@ namespace client
             {
                 for (int j = 0; j < edge; j++)
                 {
-                    if(gBoard[i, j] == nowPlayer && gBoard[i + 1, j] == nowPlayer && gBoard[i + 2, j] == nowPlayer
-                        && gBoard[i + 3, j] == nowPlayer && gBoard[i + 4, j] == nowPlayer)
+                    if(gBoard[i, j].state == nowPlayer && gBoard[i + 1, j].state == nowPlayer && gBoard[i + 2, j].state == nowPlayer
+                        && gBoard[i + 3, j].state == nowPlayer && gBoard[i + 4, j].state == nowPlayer)
                     {
                         return true;
                     }
@@ -52,8 +79,8 @@ namespace client
             {
                 for (int i = 0; i < edge; i++)
                 {
-                    if (gBoard[i, j] == nowPlayer && gBoard[i, j + 1] == nowPlayer && gBoard[i, j + 2] == nowPlayer
-                        && gBoard[i, j + 3] == nowPlayer && gBoard[i, j + 4] == nowPlayer)
+                    if (gBoard[i, j].state == nowPlayer && gBoard[i, j + 1].state == nowPlayer && gBoard[i, j + 2].state == nowPlayer
+                        && gBoard[i, j + 3].state == nowPlayer && gBoard[i, j + 4].state == nowPlayer)
                     {
                         return true;
                     }
@@ -64,8 +91,8 @@ namespace client
             {
                 for (int j = 0; j < edge - 4; j++)
                 {
-                    if (gBoard[i, j] == nowPlayer && gBoard[i + 1, j + 1] == nowPlayer && gBoard[i + 2, j + 2] == nowPlayer
-                        && gBoard[i + 3, j + 3] == nowPlayer && gBoard[i + 4, j + 4] == nowPlayer)
+                    if (gBoard[i, j].state == nowPlayer && gBoard[i + 1, j + 1].state == nowPlayer && gBoard[i + 2, j + 2].state == nowPlayer
+                        && gBoard[i + 3, j + 3].state == nowPlayer && gBoard[i + 4, j + 4].state == nowPlayer)
                     {
                         return true;
                     }
@@ -76,14 +103,113 @@ namespace client
             {
                 for (int j = 0; j < edge - 4; j++)
                 {
-                    if (gBoard[edge - i - 1, j] == nowPlayer && gBoard[edge - i - 2, j + 1] == nowPlayer && gBoard[edge - i - 3, j + 2] == nowPlayer
-                        && gBoard[edge - i - 4, j + 3] == nowPlayer && gBoard[edge - i - 5, j + 4] == nowPlayer)
+                    if (gBoard[edge - i - 1, j].state == nowPlayer && gBoard[edge - i - 2, j + 1].state == nowPlayer && gBoard[edge - i - 3, j + 2].state == nowPlayer
+                        && gBoard[edge - i - 4, j + 3].state == nowPlayer && gBoard[edge - i - 5, j + 4].state == nowPlayer)
                     {
                         return true;
                     }
                 }
             }
             return false;
+        }
+
+        private void judge_AI()
+        {
+            for (int k = 0; k < 8; k++) 
+            {
+                for (int i = 0; i < edge; i++) 
+                {
+                    for (int j = 0; j < edge; j++) 
+                    {
+                        gBoard[i, j].check= false;
+                        gBoard[i, j].weight = 1.0;
+                    }
+                }
+
+                for (int i = 0; i < edge; i++)
+                {
+                    for (int j = 0; j < edge; j++)
+                    {
+                        if(gBoard[i, j].state == Horse.BLACK && gBoard[i, j].check == false)
+                        {
+                            int cnt = 0;
+                            int tx = i, ty = j;
+                            while(tx >= 0 && ty >= 0 && tx < edge && ty < edge && gBoard[tx, ty].state == Horse.BLACK)
+                            {
+                                // 경우의 수를 정한다
+                                cnt++;
+                                gBoard[tx, ty].check = true;
+                                tx += dxdy[k, 0];
+                                ty += dxdy[k, 1];
+                            }
+       
+                            if (i - dxdy[k, 0] >= 0 && j - dxdy[k, 1] >= 0 &&
+                                i - dxdy[k, 0] < edge && j - dxdy[k, 1] < edge)
+                            {
+                                if (gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].state == Horse.none &&
+                                    gBoard[tx + dxdy[k, 0], ty + dxdy[k, 1]].state == Horse.none)
+                                {
+                                    gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(2.0, cnt * cnt);
+                                }
+                                else {
+                                    gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(1.7, cnt * cnt);
+                                }
+
+                                if (tx + dxdy[k, 0] >= 0 && ty + dxdy[k, 1] >= 0 &&
+                                tx + dxdy[k, 0] < edge && ty + dxdy[k, 1] < edge)
+                                {
+                                    if (gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].state == Horse.none &&
+                                       gBoard[tx + dxdy[k, 0], ty + dxdy[k, 1]].state == Horse.none)
+                                    {
+                                        gBoard[tx, ty].weight *= Math.Pow(2.0, cnt * cnt);
+                                    }
+                                    else
+                                    {
+                                        gBoard[tx, ty].weight *= Math.Pow(1.7, cnt * cnt);
+                                    }
+                                }
+                            }
+                         
+                        }
+
+                        if (gBoard[i, j].state == Horse.WHITE && gBoard[i, j].check == false)
+                        {
+                            for (int u = 0; u < 8; u++) 
+                            {
+                                int x = i + dxdy[u, 0];
+                                int y = j + dxdy[u, 1];
+                                if (x < 0 || y < 0 || x > edge - 1 || y > edge - 1) continue;
+                                gBoard[x, y].weight *= 1.05;
+                            }
+
+                            int cnt = 0;
+                            int tx = i, ty = j;
+                            while (tx >= 0 && ty >= 0 && tx < edge && ty < edge && gBoard[tx, ty].state == Horse.WHITE)
+                            {
+                                // 경우의 수를 정한다
+                                cnt++;
+                                gBoard[tx, ty].check = true;
+                                tx += dxdy[k, 0];
+                                ty += dxdy[k, 1];
+                            }
+
+                            if (cnt > 1)
+                            {
+                                if (i - dxdy[k, 0] >= 0 && j - dxdy[k, 1] >= 0 &&
+                                    i - dxdy[k, 0] < edge && j - dxdy[k, 1] < edge)
+                                {
+                                    gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(1.4, cnt * cnt);
+                                }
+                                if (tx >= 0 && ty >= 0 &&
+                                    tx < edge && ty < edge)
+                                {
+                                    gBoard[tx, ty].weight *= Math.Pow(1.4, cnt * cnt);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // 오목판이 refresh 되었을 때 발생하는 이벤트
@@ -126,36 +252,49 @@ namespace client
             // 클릭한 좌표 출력
             // MessageBox.Show(x + ", " + y);
             // 검은색 말이라면
-            if(gBoard[x, y] != Horse.none)
+            if(gBoard[y, x].state != Horse.none)
             {
                 MessageBox.Show("이미 말이 놓여진 자리입니다");
                 return;
             }
-            gBoard[x, y] = nowPlayer;
-            if (nowPlayer == Horse.BLACK)
-            {
-                // 검은색을 만들기 위해 SolidBrush 객체를 생성
-                SolidBrush sb = new SolidBrush(Color.Black);
-                g.FillEllipse(sb, x * size, y * size, size, size);
-            }
-            else
-            {
-                // 흰색을 만들기 위한 SolidBrush 객체를 생성
-                SolidBrush sb = new SolidBrush(Color.White);
-                g.FillEllipse(sb, x * size, y * size, size, size);
-            }
-            if(isWin())
+            gBoard[y, x].state = nowPlayer;
+            
+            // 검은색을 만들기 위해 SolidBrush 객체를 생성
+            SolidBrush sb = new SolidBrush(Color.Black);
+            g.FillEllipse(sb, x * size, y * size, size, size);
+
+            if (isWin())
             {
                 String msg = nowPlayer.ToString() + "플레이어가 승리했습니다";
                 MessageBox.Show(msg);
                 nowPlaying = false;
                 GameStart.Text = "게임시작";
             }
-            else
+
+            nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);
+
+            judge_AI();
+            double mWeight = -1;
+            for (int i = 0; i < edge; i++)
             {
-                nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);
-                ChatLog.Text = nowPlayer.ToString() + "플레이어 차례입니다";
+                for (int j = 0; j < edge; j++) 
+                {
+                    if(gBoard[i, j].weight > mWeight && gBoard[i, j].state == Horse.none)
+                    {
+                        x = i;
+                        y = j;
+                        mWeight = gBoard[i, j].weight;
+                    }
+                }
             }
+
+            gBoard[x, y].state = nowPlayer;
+            // 흰색을 만들기 위한 SolidBrush 객체를 생성
+            sb = new SolidBrush(Color.White);
+            g.FillEllipse(sb, y * size, x * size, size, size);
+
+            // ChatLog.Text = nowPlayer.ToString() + "플레이어 차례입니다";
+            nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);
         }
 
         private void refresh()
@@ -166,7 +305,7 @@ namespace client
             {
                 for (int j = 0; j < edge; j++)
                 {
-                    gBoard[i, j] = Horse.none;
+                    gBoard[i, j].state = Horse.none;
                 }
             }
         }

@@ -1,10 +1,11 @@
 ﻿  main.cpp
 c:\users\yeong\source\repos\gomoku\server\main.cpp(1): warning C4005: '_CRT_SECURE_NO_WARNINGS': 매크로 재정의
   c:\users\yeong\source\repos\gomoku\server\main.cpp: note: '_CRT_SECURE_NO_WARNINGS'의 이전 정의를 참조하십시오.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(55): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(66): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(83): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(94): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(115): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\yeong\source\repos\gomoku\server\main.cpp(166): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(81): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(92): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(111): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(122): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(142): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(216): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\yeong\source\repos\gomoku\server\main.cpp(298): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
   Server.vcxproj -> C:\Users\yeong\source\repos\gomoku\Debug\Server.exe
