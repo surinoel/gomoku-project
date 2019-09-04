@@ -149,6 +149,27 @@ void putClient(int roomID, int x, int y) {
 	}
 }
 
+void chatClient(int roomID, string msg) {
+	char *sent = new char[256];
+	bool ok = false;
+	for (int i = 0; i < connections.size(); i++) {
+		if (connections[i].getRoomID() == roomID) {
+			ZeroMemory(sent, 256);
+			if (!ok) {
+				string data = "[Chat](Black): " + msg;
+				sprintf(sent, "%s", data.c_str());
+				ok = true;
+			}
+			else {
+				string data = "[Chat](White): " + msg;
+				sprintf(sent, "%s", data.c_str());
+			}
+			send(connections[i].getClientSocket(), sent, 256, 0);
+
+		}
+	}
+}
+
 bool isWin(int roomID, int nowHorse)
 {
 	// | 오목
@@ -274,7 +295,6 @@ void ServerThread(Client *client) {
 						}
 					}
 				}
-
 			}
 			else if (receivedString.find("[Play]") != -1) {
 				/* 메시지를 보낸 클라이언트를 찾기 */
@@ -288,6 +308,11 @@ void ServerThread(Client *client) {
 				}
 				/* 사용자가 놓은 돌의 위치를 전송 */
 				playClient(roomInt);
+			}
+			else if (receivedString.find("[Chat]") != -1) {
+				int roomInt = client->getRoomID();
+				string msg = tokens[1];
+				chatClient(roomInt, msg);
 			}
 		}
 		else {

@@ -10,3 +10,14 @@ C:\Users\yeong\source\repos\gomoku\client\obj\Debug\client.MenuForm.resources
 C:\Users\yeong\source\repos\gomoku\client\obj\Debug\client.SinglePlay.resources
 C:\Users\yeong\source\repos\gomoku\client\obj\Debug\client.MultiPlay.resources
 C:\Users\yeong\source\repos\gomoku\client\obj\Debug\client.csprojAssemblyReference.cache
+E:\git\gomoku-project\gomoku\client\bin\Debug\client.exe.config
+E:\git\gomoku-project\gomoku\client\bin\Debug\client.exe
+E:\git\gomoku-project\gomoku\client\bin\Debug\client.pdb
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.MenuForm.resources
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.MultiPlay.resources
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.Properties.Resources.resources
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.SinglePlay.resources
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.GenerateResource.cache
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.CoreCompileInputs.cache
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.exe
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.pdb

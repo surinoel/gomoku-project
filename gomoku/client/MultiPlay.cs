@@ -43,6 +43,9 @@ namespace client
         private bool entered = false;
         private bool threading = false;
 
+        private int blackTimer_left;
+        private int whiteTimer_left;
+
         public MultiPlay()
         {
             InitializeComponent();
@@ -53,6 +56,10 @@ namespace client
             entered = false;
             threading = false;
             gBoard = new Horse[edge, edge];
+            blackTimer_label.Text = "30";
+            whiteTimer_label.Text = "30";
+            
+            whiteTimer_left = 30;
         }
 
         private void refresh()
@@ -126,7 +133,7 @@ namespace client
         {
             tcpClient = new TcpClient();
             string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
-            tcpClient.Connect(Ipv4, 10682);
+            tcpClient.Connect(Ipv4, 18178);
             stream = tcpClient.GetStream();
 
             // client에 대한 스레드 생성, 함수는 read
@@ -161,11 +168,11 @@ namespace client
             {
                 byte[] buf = new byte[1024];
                 int bufBytes = stream.Read(buf, 0, buf.Length);
-                string msg = Encoding.ASCII.GetString(buf, 0, bufBytes);
+                string msg = Encoding.UTF8.GetString(buf, 0, bufBytes);
                 // 접속이 성공한 경우
                 if (msg.Contains("[Enter]"))
                 {
-                    this.Status.Text = "[" + this.Room.Text + "]번 방에 접속했습니다.";
+                    this.Status.Text = "[" + this.Room.Text + "]번 방에 접속했습니다.\r\n";
                     /* 게임 시작 처리 */
                     this.Room.Enabled = false;
                     this.Enter_Button.Enabled = false;
@@ -174,7 +181,7 @@ namespace client
                 // 방이 가득 찬 경우
                 if (msg.Contains("[Full]"))
                 {
-                    this.Status.Text = "이미 가득 찬 방입니다.";
+                    this.Status.Text = "이미 가득 찬 방입니다.\r\n";
                     closeNetwork();
                 }
                 // 게임이 시작된 경우
@@ -184,17 +191,21 @@ namespace client
                     string horse = msg.Split(']')[1];
                     if (horse.Contains("Black"))
                     {
-                        this.Status.Text = "당신의 차례입니다.";
+                        this.Status.Text = "당신의 차례입니다.\r\n";
                         nowTurn = true;
                         nowPlayer = Horse.BLACK;
                     }
                     else
                     {
-                        this.Status.Text = "상대방의 차례입니다.";
+                        this.Status.Text = "상대방의 차례입니다.\r\n";
                         nowTurn = false;
                         nowPlayer = Horse.WHITE;
                     }
                     nowPlaying = true;
+
+                    blackTimer_left = 30;
+                    blackTimer_label.Text = "30";
+                    blackTimer.Start();
                 }
                 // 상대방이 나간 경우
                 if (msg.Contains("[Exit]"))
@@ -223,11 +234,16 @@ namespace client
                     {
                         SolidBrush brush = new SolidBrush(Color.Black);
                         g.FillEllipse(brush, x * size, y * size, size, size);
+                        whiteTimer.Start();
                     }
                     else
                     {
                         SolidBrush brush = new SolidBrush(Color.White);
                         g.FillEllipse(brush, x * size, y * size, size, size);
+                        blackTimer_label.Text = "30";
+                        blackTimer_left = 30;
+
+                        blackTimer.Start();
                     }
 #if false
                     if (isWin(enemyPlayer))
@@ -238,22 +254,28 @@ namespace client
                         GameStart.Enabled = true;
                     }
 #endif
-                    Status.Text = "당신이 둘 차례입니다.";
+                    Status.AppendText("당신이 둘 차례입니다.\r\n");
                     nowTurn = true;
                 }
                 if (msg.Contains("[Win]"))
                 {
-                    Status.Text = "승리했습니다.";
+                    Status.AppendText("승리했습니다.\r\n");
                     nowPlaying = false;
                     GameStart.Text = "재시작";
                     GameStart.Enabled = true;
                 }
                 if (msg.Contains("[Lose]"))
                 {
-                    Status.Text = "패배했습니다.";
+                    Status.AppendText("패배했습니다.\r\n");
                     nowPlaying = false;
                     GameStart.Text = "재시작";
                     GameStart.Enabled = true;
+                }
+                if(msg.Contains("[Chat]"))
+                {
+                    string log = msg.Split(']')[1];
+                    Status.AppendText(log);
+                    Status.Text += Environment.NewLine;
                 }
             }
         }
@@ -365,6 +387,55 @@ namespace client
                     tcpClient.Close();
                 }
          }
+
+        private void send_Click(object sender, EventArgs e)
+        {
+            string msg = "[Chat]";
+            byte[] buf = Encoding.UTF8.GetBytes(msg + this.comment.Text);
+            this.comment.Clear();
+            stream.Write(buf, 0, buf.Length);
+        }
+
+        private void comment_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                string msg = "[Chat]";
+                byte[] buf = Encoding.UTF8.GetBytes(msg + this.comment.Text);
+                this.comment.Clear();
+                stream.Write(buf, 0, buf.Length);
+            }
+        }
+
+        private void blackTimer_Tick(object sender, EventArgs e)
+        {
+            if (blackTimer_left > 0)
+            {
+                blackTimer_left -= 1;
+                blackTimer_label.Text = blackTimer_left.ToString();
+            }
+            else
+            {
+                blackTimer_left = 30;
+                blackTimer.Stop();
+                blackTimer_label.Text = "30";
+            }
+        }
+
+        private void whiteTimer_Tick(object sender, EventArgs e)
+        {
+            if (whiteTimer_left > 0)
+            {
+                whiteTimer_left -= 1;
+                whiteTimer_label.Text = whiteTimer_left.ToString();
+            }
+            else
+            {
+                whiteTimer_left = 30;
+                whiteTimer.Stop();
+                whiteTimer_label.Text = "30";
+            }
+        }
     }
     
 }
