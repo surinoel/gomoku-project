@@ -1,13 +1,13 @@
 ﻿  main.cpp
-f:\git\gomoku-project\gomoku\server\main.cpp(1): warning C4005: '_CRT_SECURE_NO_WARNINGS': 매크로 재정의
-  f:\git\gomoku-project\gomoku\server\main.cpp: note: '_CRT_SECURE_NO_WARNINGS'의 이전 정의를 참조하십시오.
-f:\git\gomoku-project\gomoku\server\main.cpp(81): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(92): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(111): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(122): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(142): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(156): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(170): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(243): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-f:\git\gomoku-project\gomoku\server\main.cpp(330): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-  Server.vcxproj -> F:\git\gomoku-project\gomoku\Debug\Server.exe
+e:\git\gomoku-project\gomoku\server\main.cpp(1): warning C4005: '_CRT_SECURE_NO_WARNINGS': 매크로 재정의
+  e:\git\gomoku-project\gomoku\server\main.cpp: note: '_CRT_SECURE_NO_WARNINGS'의 이전 정의를 참조하십시오.
+e:\git\gomoku-project\gomoku\server\main.cpp(81): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(92): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(111): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(122): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(142): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(156): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(170): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(243): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+e:\git\gomoku-project\gomoku\server\main.cpp(330): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  Server.vcxproj -> E:\git\gomoku-project\gomoku\Debug\Server.exe

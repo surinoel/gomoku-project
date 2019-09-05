@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.gomoku_area = new System.Windows.Forms.PictureBox();
             this.Enter_Button = new System.Windows.Forms.Button();
             this.GameStart = new System.Windows.Forms.Button();
@@ -40,9 +39,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.blackTimer_label = new System.Windows.Forms.Label();
             this.whiteTimer_label = new System.Windows.Forms.Label();
-            this.blackTimer = new System.Windows.Forms.Timer(this.components);
-            this.whiteTimer = new System.Windows.Forms.Timer(this.components);
+            this.blackTimer = new System.Timers.Timer();
+            this.whiteTimer = new System.Timers.Timer();
             ((System.ComponentModel.ISupportInitialize)(this.gomoku_area)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blackTimer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.whiteTimer)).BeginInit();
             this.SuspendLayout();
             // 
             // gomoku_area
@@ -153,13 +154,15 @@
             // 
             // blackTimer
             // 
-            this.blackTimer.Interval = 1000;
-            this.blackTimer.Tick += new System.EventHandler(this.blackTimer_Tick);
+            this.blackTimer.Interval = 1000D;
+            this.blackTimer.SynchronizingObject = this;
+            this.blackTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.blackTimer_Elapsed);
             // 
             // whiteTimer
             // 
-            this.whiteTimer.Interval = 1000;
-            this.whiteTimer.Tick += new System.EventHandler(this.whiteTimer_Tick);
+            this.whiteTimer.Interval = 1000D;
+            this.whiteTimer.SynchronizingObject = this;
+            this.whiteTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.whiteTimer_Elapsed);
             // 
             // MultiPlay
             // 
@@ -181,6 +184,8 @@
             this.Text = "MultiPlay";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MultiPlay_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.gomoku_area)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blackTimer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.whiteTimer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -199,7 +204,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label blackTimer_label;
         private System.Windows.Forms.Label whiteTimer_label;
-        private System.Windows.Forms.Timer blackTimer;
-        private System.Windows.Forms.Timer whiteTimer;
+        private System.Timers.Timer blackTimer;
+        private System.Timers.Timer whiteTimer;
     }
 }

@@ -35,6 +35,8 @@ namespace client
         private Horse[,] gBoard;
         // 현재 플레이어 선언
         private Horse nowPlayer = Horse.BLACK;
+        private Horse enemyPlayer = Horse.none;
+
         // 게임 시작 버튼을 넣음으로써 생기는 변수
         private bool nowPlaying = false;
         // 적과의 대치에서 턴의 정보를 알 수 있는 변수
@@ -195,16 +197,17 @@ namespace client
                         this.Status.Text += "당신의 차례입니다.\r\n";
                         nowTurn = true;
                         nowPlayer = Horse.BLACK;
+                        enemyPlayer = Horse.WHITE;
                     }
                     else
                     {
                         this.Status.Text += "상대방의 차례입니다.\r\n";
                         nowTurn = false;
                         nowPlayer = Horse.WHITE;
+                        enemyPlayer = Horse.BLACK;
                     }
                     nowPlaying = true;
 
-                    blackTimer.Interval = 1000;
                     blackTimer.Start();
                 }
                 // 상대방이 나간 경우
@@ -218,15 +221,7 @@ namespace client
                     string position = msg.Split(']')[1];
                     int x = Convert.ToInt32(position.Split(',')[0]);
                     int y = Convert.ToInt32(position.Split(',')[1]);
-                    Horse enemyPlayer = Horse.none;
-                    if (nowPlayer == Horse.BLACK)
-                    {
-                        enemyPlayer = Horse.WHITE;
-                    }
-                    else
-                    {
-                        enemyPlayer = Horse.BLACK;
-                    }
+                    
                     if (gBoard[x, y] != Horse.none) continue;
                     gBoard[x, y] = enemyPlayer;
                     Graphics g = this.gomoku_area.CreateGraphics();
@@ -234,16 +229,11 @@ namespace client
                     {
                         SolidBrush brush = new SolidBrush(Color.Black);
                         g.FillEllipse(brush, x * size, y * size, size, size);
-                        whiteTimer.Start();
                     }
                     else
                     {
                         SolidBrush brush = new SolidBrush(Color.White);
                         g.FillEllipse(brush, x * size, y * size, size, size);
-                        blackTimer_label.Text = "30";
-                        blackTimer_left = 30;
-
-                        blackTimer.Start();
                     }
 #if false
                     if (isWin(enemyPlayer))
@@ -256,6 +246,29 @@ namespace client
 #endif
                     Status.AppendText("당신이 둘 차례입니다.\r\n");
                     nowTurn = true;
+
+                    if(nowPlayer == Horse.BLACK)
+                    {
+                        whiteTimer.Stop();
+                        whiteTimer_label.Text = "30";
+                        whiteTimer_left = 30;
+
+                        blackTimer_label.Text = "30";
+                        blackTimer_left = 30;
+
+                        blackTimer.Start();
+                    }
+                    else
+                    {
+                        blackTimer.Stop();
+                        blackTimer_label.Text = "30";
+                        blackTimer_left = 30;
+
+                        whiteTimer_label.Text = "30";
+                        whiteTimer_left = 30;
+
+                        whiteTimer.Start();
+                    }
                 }
                 if (msg.Contains("[Win]"))
                 {
@@ -263,6 +276,14 @@ namespace client
                     nowPlaying = false;
                     GameStart.Text = "재시작";
                     GameStart.Enabled = true;
+
+                    blackTimer.Stop();
+                    blackTimer_label.Text = "30";
+                    blackTimer_left = 30;
+
+                    whiteTimer.Stop();
+                    whiteTimer_label.Text = "30";
+                    whiteTimer_left = 30;
                 }
                 if (msg.Contains("[Lose]"))
                 {
@@ -270,6 +291,14 @@ namespace client
                     nowPlaying = false;
                     GameStart.Text = "재시작";
                     GameStart.Enabled = true;
+
+                    blackTimer.Stop();
+                    blackTimer_label.Text = "30";
+                    blackTimer_left = 30;
+
+                    whiteTimer.Stop();
+                    whiteTimer_label.Text = "30";
+                    whiteTimer_left = 30;
                 }
                 if(msg.Contains("[Chat]"))
                 {
@@ -279,51 +308,51 @@ namespace client
                 }
             }
         }
-            // 바둑판이 눌러졌을 때
-            private void gomoku_area_MouseDown(object sender, MouseEventArgs e)
+        // 바둑판이 눌러졌을 때
+        private void gomoku_area_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!nowPlaying) // 혼자 입장해있을 때
             {
-                if (!nowPlaying) // 혼자 입장해있을 때
-                {
-                    MessageBox.Show("게임을 실행한 후 눌러주세요");
-                    return;
-                }
-                if (!nowTurn) // 내 턴이 아니라면
-                {
-                    return;
-                }
-                // 오목판에 그림을 그리기 위해 Graphics 객체를 만들어줬다
-                Graphics g = this.gomoku_area.CreateGraphics();
-                int x = e.X / size;
-                int y = e.Y / size;
-                // 테두리를 벗어났을 때
-                if (x < 0 || y < 0 || x >= edge || y >= edge)
-                {
-                    MessageBox.Show("테두리를 벗어났습니다");
-                    return;
-                }
-                // 클릭한 좌표 출력
-                // MessageBox.Show(x + ", " + y);
-                // 검은색 말이라면
-                if (gBoard[x, y] != Horse.none) return;
+                MessageBox.Show("게임을 실행한 후 눌러주세요");
+                return;
+            }
+            if (!nowTurn) // 내 턴이 아니라면
+            {
+                return;
+            }
+            // 오목판에 그림을 그리기 위해 Graphics 객체를 만들어줬다
+            Graphics g = this.gomoku_area.CreateGraphics();
+            int x = e.X / size;
+            int y = e.Y / size;
+            // 테두리를 벗어났을 때
+            if (x < 0 || y < 0 || x >= edge || y >= edge)
+            {
+                MessageBox.Show("테두리를 벗어났습니다");
+                return;
+            }
+            // 클릭한 좌표 출력
+            // MessageBox.Show(x + ", " + y);
+            // 검은색 말이라면
+            if (gBoard[x, y] != Horse.none) return;
 
-                gBoard[x, y] = nowPlayer;
+            gBoard[x, y] = nowPlayer;
 
-                string message = "[Put]" + Room.Text + "," + x + "," + y;
-                byte[] buf = Encoding.ASCII.GetBytes(message);
-                stream.Write(buf, 0, buf.Length);
+            string message = "[Put]" + Room.Text + "," + x + "," + y;
+            byte[] buf = Encoding.ASCII.GetBytes(message);
+            stream.Write(buf, 0, buf.Length);
 
-                if (nowPlayer == Horse.BLACK)
-                {
-                    // 검은색을 만들기 위해 SolidBrush 객체를 생성
-                    SolidBrush sb = new SolidBrush(Color.Black);
-                    g.FillEllipse(sb, x * size, y * size, size, size);
-                }
-                else
-                {
-                    // 흰색을 만들기 위한 SolidBrush 객체를 생성
-                    SolidBrush sb = new SolidBrush(Color.White);
-                    g.FillEllipse(sb, x * size, y * size, size, size);
-                }
+            if (nowPlayer == Horse.BLACK)
+            {
+                // 검은색을 만들기 위해 SolidBrush 객체를 생성
+                SolidBrush sb = new SolidBrush(Color.Black);
+                g.FillEllipse(sb, x * size, y * size, size, size);
+            }
+            else
+            {
+                // 흰색을 만들기 위한 SolidBrush 객체를 생성
+                SolidBrush sb = new SolidBrush(Color.White);
+                g.FillEllipse(sb, x * size, y * size, size, size);
+            }
 #if false
                 if (isWin(nowPlayer))
                 {
@@ -333,9 +362,32 @@ namespace client
                     GameStart.Text = "재시작";
                 }
 #endif
-                Status.Text += "상대방 플레이어 차례입니다.\r\n";
-                nowTurn = false;
+            Status.Text += "상대방 플레이어 차례입니다.\r\n";
+            nowTurn = false;
+
+            if(enemyPlayer == Horse.WHITE)
+            {
+                blackTimer.Stop();
+                blackTimer_label.Text = "30";
+                blackTimer_left = 30;
+
+                whiteTimer_label.Text = "30";
+                whiteTimer_left = 30;
+
+                whiteTimer.Start();
             }
+            else
+            {
+                whiteTimer.Stop();
+                whiteTimer_label.Text = "30";
+                whiteTimer_left = 30;
+
+                blackTimer_label.Text = "30";
+                blackTimer_left = 30;
+
+                blackTimer.Start();
+            }
+        }
 
             // 화면 구성 함수
             private void gomoku_area_Paint(object sender, PaintEventArgs e)
@@ -407,22 +459,7 @@ namespace client
             }
         }
 
-        private void blackTimer_Tick(object sender, EventArgs e)
-        {
-            if (blackTimer_left > 0)
-            {
-                blackTimer_left -= 1;
-                blackTimer_label.Text = blackTimer_left.ToString();
-            }
-            else
-            {
-                blackTimer_left = 30;
-                blackTimer.Stop();
-                blackTimer_label.Text = "30";
-            }
-        }
-
-        private void whiteTimer_Tick(object sender, EventArgs e)
+        private void whiteTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (whiteTimer_left > 0)
             {
@@ -431,11 +468,37 @@ namespace client
             }
             else
             {
+                if(nowPlayer == Horse.WHITE)
+                {
+                    // MessageBox.Show("주어진 시간을 초과했습니다. 주의해주세요!");
+                    this.Status.Text += "시간 초과입니다 주의해주세요.\r\n";
+                }
                 whiteTimer_left = 30;
                 whiteTimer.Stop();
                 whiteTimer_label.Text = "30";
+                whiteTimer.Start();
+            }
+        }
+        
+        private void blackTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (blackTimer_left > 0)
+            {
+                blackTimer_left -= 1;
+                blackTimer_label.Text = blackTimer_left.ToString();
+            }
+            else
+            {
+                if(nowPlayer == Horse.BLACK)
+                {
+                    // MessageBox.Show("주어진 시간을 초과했습니다. 주의해주세요!");
+                    this.Status.Text += "시간 초과입니다 주의해주세요.\r\n";
+                }
+                blackTimer_left = 30;
+                blackTimer.Stop();
+                blackTimer_label.Text = "30";
+                blackTimer.Start();
             }
         }
     }
-    
 }

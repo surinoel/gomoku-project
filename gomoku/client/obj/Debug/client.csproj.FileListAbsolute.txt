@@ -32,3 +32,4 @@ F:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.GenerateResource.cac
 F:\git\gomoku-project\gomoku\client\obj\Debug\client.csproj.CoreCompileInputs.cache
 F:\git\gomoku-project\gomoku\client\obj\Debug\client.exe
 F:\git\gomoku-project\gomoku\client\obj\Debug\client.pdb
+E:\git\gomoku-project\gomoku\client\obj\Debug\client.csprojAssemblyReference.cache
