@@ -48,6 +48,8 @@ namespace client
         private int blackTimer_left;
         private int whiteTimer_left;
 
+        private int ex, ey;
+
         public MultiPlay()
         {
             InitializeComponent();
@@ -227,13 +229,25 @@ namespace client
                     Graphics g = this.gomoku_area.CreateGraphics();
                     if (enemyPlayer == Horse.BLACK)
                     {
-                        SolidBrush brush = new SolidBrush(Color.Black);
+                        SolidBrush brush = new SolidBrush(Color.SandyBrown);
+                        g.FillRectangle(brush, ex * size, ey * size, 4, 4);
+                        brush = new SolidBrush(Color.Red);
+                        g.FillEllipse(brush, x * size, y * size, 4, 4);
+                        brush = new SolidBrush(Color.Black);
                         g.FillEllipse(brush, x * size, y * size, size, size);
+
+                        ex = x; ey = y;
                     }
                     else
                     {
-                        SolidBrush brush = new SolidBrush(Color.White);
+                        SolidBrush brush = new SolidBrush(Color.SandyBrown);
+                        g.FillRectangle(brush, ex * size, ey * size, 4, 4);
+                        brush = new SolidBrush(Color.Red);
+                        g.FillEllipse(brush, x * size, y * size, 4, 4);
+                        brush = new SolidBrush(Color.White);
                         g.FillEllipse(brush, x * size, y * size, size, size);
+
+                        ex = x; ey = y;
                     }
 #if false
                     if (isWin(enemyPlayer))
