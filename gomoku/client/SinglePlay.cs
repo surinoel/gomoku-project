@@ -199,12 +199,12 @@ namespace client
                                 if (i - dxdy[k, 0] >= 0 && j - dxdy[k, 1] >= 0 &&
                                     i - dxdy[k, 0] < edge && j - dxdy[k, 1] < edge)
                                 {
-                                    gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(1.4, cnt * cnt);
+                                    gBoard[i - dxdy[k, 0], j - dxdy[k, 1]].weight *= Math.Pow(2.0, cnt * cnt);
                                 }
                                 if (tx >= 0 && ty >= 0 &&
                                     tx < edge && ty < edge)
                                 {
-                                    gBoard[tx, ty].weight *= Math.Pow(1.4, cnt * cnt);
+                                    gBoard[tx, ty].weight *= Math.Pow(2.0, cnt * cnt);
                                 }
                             }
                         }

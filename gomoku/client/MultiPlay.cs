@@ -137,8 +137,8 @@ namespace client
         private void Enter_Button_Click(object sender, EventArgs e)
         {
             tcpClient = new TcpClient();
-            // string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
-            tcpClient.Connect("127.0.0.1", 8000);
+            string Ipv4 = getDNStoIP("0.tcp.ngrok.io");
+            tcpClient.Connect(Ipv4, 11936);
             stream = tcpClient.GetStream();
 
             // client에 대한 스레드 생성, 함수는 read
